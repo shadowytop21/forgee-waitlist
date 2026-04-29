@@ -8,104 +8,422 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@700&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
-/* CSS omitted for brevity in this copy — keep your original CSS in your source file. */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:#08070a;color:#fff;font-family:'DM Sans',sans-serif;overflow-x:hidden;cursor:none;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(255,255,255,.15);color:#fff}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:#08070a}
+::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:2px}
+#cursor-dot{position:fixed;width:8px;height:8px;border-radius:50%;background:#fff;pointer-events:none;z-index:10000;transform:translate(-50%,-50%);transition:transform .1s ease,opacity .2s;mix-blend-mode:difference}
+#cursor-ring{position:fixed;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.35);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .18s ease,width .3s,height .3s,border-color .3s}
+#spotlight{position:fixed;inset:0;pointer-events:none;z-index:9990;background:radial-gradient(circle 280px at var(--mx,50%) var(--my,50%),rgba(255,255,255,.04) 0%,rgba(255,255,255,.015) 40%,transparent 70%);transition:opacity .4s}
+body:not(.has-moved) #spotlight{opacity:0}
+body.has-moved #spotlight{opacity:1}
+body.cursor-hover #cursor-ring{width:56px;height:56px;border-color:rgba(255,255,255,.6)}
+body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E");background-size:300px;opacity:.03}
+.nav{position:fixed;top:0;left:0;right:0;z-index:500;height:64px;padding:0 52px;display:flex;align-items:center;justify-content:space-between;transition:background .5s,border-color .5s;border-bottom:1px solid transparent}
+.nav.stuck{background:rgba(8,7,10,.85);backdrop-filter:blur(24px);border-bottom-color:rgba(255,255,255,.06)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo-box{width:32px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:15px;transition:border-color .25s,background .25s}
+.nav-logo:hover .nav-logo-box{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.08)}
+.nav-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:#fff}
+.nav-btn{padding:9px 22px;border-radius:100px;border:1px solid rgba(255,255,255,.18);background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:rgba(255,255,255,.7);cursor:none;transition:border-color .25s,color .25s,background .25s}
+.nav-btn:hover{border-color:rgba(255,255,255,.5);color:#fff;background:rgba(255,255,255,.05)}
+@media(max-width:600px){.nav{padding:0 20px}.nav-btn{display:none}}
+.page-wrap{position:relative}
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero-vid{position:absolute;inset:0;z-index:0;overflow:hidden;background:#08070a}
+.hero-vid iframe,.hero-vid video{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(1.12);width:177.78vh;height:100vh;min-width:100%;min-height:56.25vw;border:none;pointer-events:none}
+.hero-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(8,7,10,0) 0%,rgba(8,7,10,.3) 50%,rgba(8,7,10,1) 100%),linear-gradient(to right,rgba(8,7,10,.1) 0%,transparent 50%,rgba(8,7,10,.1) 100%)}
+.hero-overlay::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);pointer-events:none}
+.hero-content{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 24px;max-width:980px;padding-top:64px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:5px 16px;margin-bottom:28px;border:1px solid rgba(255,255,255,.18);border-radius:100px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.55);background:rgba(255,255,255,.04);backdrop-filter:blur(8px);opacity:0;animation:fadeSlide .8s .1s cubic-bezier(.16,1,.3,1) forwards}
+.badge-pip{width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff,0 0 20px rgba(255,255,255,.4);animation:pip 2.5s ease infinite}
+@keyframes pip{0%,100%{box-shadow:0 0 6px #fff,0 0 16px rgba(255,255,255,.3)}50%{box-shadow:0 0 12px #fff,0 0 30px rgba(255,255,255,.6)}}
+.hero-hl{display:flex;flex-direction:column;align-items:center;gap:0;margin-bottom:12px;line-height:1}
+.hl-word{font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,16vw,190px);letter-spacing:2px;color:#fff;line-height:.9;display:block;opacity:0;transform:translateY(-60px) skewY(-3deg);animation:wordDrop .7s cubic-bezier(.22,1,.36,1) forwards;text-shadow:0 4px 40px rgba(0,0,0,.6)}
+.hl-word:nth-child(1){animation-delay:.25s}
+.hl-word:nth-child(2){animation-delay:.38s}
+.hl-word:nth-child(3){animation-delay:.50s;color:rgba(255,255,255,.9)}
+.hl-script{font-family:'Caveat',cursive;font-size:clamp(22px,4vw,52px);color:rgba(255,255,255,.65);font-weight:700;letter-spacing:1px;margin-top:-8px;opacity:0;animation:fadeSlide .9s .65s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes wordDrop{from{opacity:0;transform:translateY(-70px) skewY(-4deg)}to{opacity:1;transform:translateY(0) skewY(0)}}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.hero-desc{font-size:clamp(14px,1.5vw,16px);font-weight:300;line-height:1.9;color:rgba(255,255,255,.58);max-width:420px;margin-bottom:44px;opacity:0;animation:fadeSlide .9s .75s cubic-bezier(.16,1,.3,1) forwards}
+.hero-form-wrap{width:100%;max-width:460px;opacity:0;animation:fadeSlide .9s .88s cubic-bezier(.16,1,.3,1) forwards}
+.hero-form{display:flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:5px;backdrop-filter:blur(16px);transition:border-color .3s,box-shadow .3s}
+.hero-form:focus-within{border-color:rgba(255,255,255,.4);box-shadow:0 0 0 3px rgba(255,255,255,.06),0 0 40px rgba(255,255,255,.04)}
+.hero-input{flex:1;padding:13px 18px;background:transparent;border:none;outline:none;color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300}
+.hero-input::placeholder{color:rgba(255,255,255,.25)}
+.hero-submit{padding:13px 24px;background:#fff;color:#08070a;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:none;white-space:nowrap;transition:all .22s}
+.hero-submit:hover{background:rgba(255,255,255,.9);transform:translateY(-1px);box-shadow:0 8px 28px rgba(255,255,255,.2)}
+.form-note{margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:1.2px}
+.form-ok{display:none;margin-top:14px;padding:11px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.7);letter-spacing:.5px}
+.form-err{display:none;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#ff6b6b}
+.scroll-cue{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:10;display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:fadeSlide 1s 1.2s ease forwards}
+.sc-line{width:1px;height:50px;background:linear-gradient(to bottom,transparent,rgba(255,255,255,.3),transparent);animation:linePulse 2.5s ease infinite}
+@keyframes linePulse{0%,100%{opacity:.4;transform:scaleY(.8)}50%{opacity:.9;transform:scaleY(1)}}
+.sc-txt{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.2);text-transform:uppercase}
+.wipe-transition{position:relative;height:120px;overflow:hidden;z-index:20}
+.wipe-transition::before{content:'';position:absolute;inset:0;background:var(--from-bg,#08070a);clip-path:polygon(0 0,100% 0,100% 40%,0 100%)}
+.wipe-transition::after{content:'';position:absolute;inset:0;background:var(--to-bg,#0d0d10);clip-path:polygon(0 60%,100% 0,100% 100%,0 100%)}
+.parallax-section{position:relative;transform:translateZ(0);will-change:transform}
+.countdown-sec{position:relative;background:#0a090d;padding:120px 48px 140px;display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden}
+.countdown-sec::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:900px;height:700px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.05) 0%,rgba(180,200,255,.03) 30%,transparent 70%);pointer-events:none;animation:glowPulse 6s ease infinite}
+@keyframes glowPulse{0%,100%{opacity:.6;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.08)}}
+.countdown-sec::after{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);background-size:40px 40px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 0%,transparent 100%)}
+.cd-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:14px;margin-bottom:64px}
+.cd-label::before,.cd-label::after{content:'';width:60px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2))}
+.cd-label::after{background:linear-gradient(90deg,rgba(255,255,255,.2),transparent)}
+.scoreboard{display:flex;align-items:center;gap:12px;margin-bottom:72px;flex-wrap:wrap;justify-content:center}
+.sb-unit{display:flex;flex-direction:column;align-items:center;gap:0}
+.sb-tile{position:relative;width:clamp(110px,16vw,180px);padding:clamp(18px,3vw,32px) clamp(12px,2vw,24px);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden;transition:border-color .4s,box-shadow .4s}
+.sb-tile::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04) 0%,transparent 60%);pointer-events:none}
+.sb-tile::after{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent)}
+.sb-tile.active{border-color:rgba(255,255,255,.25);box-shadow:0 0 30px rgba(255,255,255,.05),0 0 80px rgba(180,200,255,.04),inset 0 1px 0 rgba(255,255,255,.1)}
+.sb-num{display:block;font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,9vw,110px);line-height:1;letter-spacing:2px;color:#fff;text-align:center;text-shadow:0 0 40px rgba(255,255,255,.15),0 0 80px rgba(255,255,255,.06);transition:opacity .12s,transform .12s}
+.sb-num.tick{opacity:0;transform:translateY(-8px) scale(.96)}
+.sb-word{display:block;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.22);text-align:center}
+.sb-sep{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,6vw,80px);color:rgba(255,255,255,.12);line-height:1;margin-bottom:20px;animation:sepBlink 1s step-end infinite}
+@keyframes sepBlink{0%,49%{opacity:1}50%,100%{opacity:.1}}
+.cd-headline{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,60px);letter-spacing:2px;color:#fff;margin-bottom:10px;line-height:1}
+.cd-sub{font-family:'Caveat',cursive;font-size:clamp(20px,3vw,32px);color:rgba(255,255,255,.45);margin-bottom:48px;font-weight:700}
+.cd-form{display:flex;gap:7px;max-width:380px;width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:5px;backdrop-filter:blur(12px);transition:border-color .25s,box-shadow .25s;margin-bottom:12px}
+.cd-form:focus-within{border-color:rgba(255,255,255,.3);box-shadow:0 0 0 3px rgba(255,255,255,.04)}
+.cd-input{flex:1;padding:11px 16px;background:transparent;border:none;outline:none;color:#fff;font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:300}
+.cd-input::placeholder{color:rgba(255,255,255,.2)}
+.cd-btn{padding:10px 20px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:rgba(255,255,255,.7);cursor:none;white-space:nowrap;transition:all .2s}
+.cd-btn:hover{border-color:rgba(255,255,255,.35);color:#fff;background:rgba(255,255,255,.12)}
+.cd-note{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.18);letter-spacing:.5px}
+.cd-ok{display:none;margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.55);letter-spacing:.5px}
+.cd-err{display:none;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#ff6b6b}
+.cd-progress{width:100%;max-width:380px;margin-top:48px}
+.cd-prog-top{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.2);margin-bottom:10px;letter-spacing:.5px}
+.cd-track{height:2px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.cd-fill{height:100%;width:0;background:linear-gradient(90deg,rgba(255,255,255,.3),rgba(255,255,255,.7));border-radius:2px;transition:width 1.4s cubic-bezier(.16,1,.3,1);box-shadow:0 0 12px rgba(255,255,255,.2)}
+.diagonal-wipe{position:relative;height:100px;background:#0a090d;margin-top:-1px;overflow:hidden}
+.diagonal-wipe::after{content:'';position:absolute;inset:0;background:#08070a;clip-path:polygon(0 0,100% 60%,100% 100%,0 100%)}
+.showcase-sec{position:relative;background:#08070a;padding:120px 48px 100px;display:flex;flex-direction:column;align-items:center;text-align:center}
+@media(max-width:600px){.showcase-sec{padding:80px 20px 80px}}
+.showcase-sec::before{content:'';position:absolute;top:0;left:-200px;width:500px;height:100%;background:radial-gradient(ellipse at left,rgba(255,255,255,.025) 0%,transparent 70%);pointer-events:none}
+.showcase-sec::after{content:'';position:absolute;top:0;right:-200px;width:500px;height:100%;background:radial-gradient(ellipse at right,rgba(255,255,255,.025) 0%,transparent 70%);pointer-events:none}
+.sc-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:16px}
+.sc-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,9vw,100px);letter-spacing:2px;color:#fff;line-height:.95;margin-bottom:8px}
+.sc-script{font-family:'Caveat',cursive;font-size:clamp(20px,3vw,36px);color:rgba(255,255,255,.4);font-weight:700;margin-bottom:56px}
+.sc-frame{width:100%;max-width:960px;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.1);background:#0d0c10;box-shadow:0 0 0 1px rgba(255,255,255,.05),0 60px 120px rgba(0,0,0,.9),0 0 100px rgba(255,255,255,.025);position:relative}
+.sc-frame::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;z-index:2;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);pointer-events:none}
+.sc-chrome{display:flex;align-items:center;gap:12px;padding:13px 20px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.07)}
+.sc-dots{display:flex;gap:7px}
+.sc-dot{width:11px;height:11px;border-radius:50%}
+.sc-dot.r{background:#ff5f57}.sc-dot.y{background:#febc2e}.sc-dot.g{background:#28c840}
+.sc-url{flex:1;max-width:260px;margin:0 auto;padding:5px 12px;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.25);text-align:center}
+.sc-video{width:100%;aspect-ratio:16/9;background:#0d0c10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;position:relative;overflow:hidden;min-height:220px}
+.sc-video::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:48px 48px;opacity:.7}
+.play-btn{position:relative;z-index:1;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.9);color:#08070a;border:none;cursor:none;font-size:28px;display:flex;align-items:center;justify-content:center;transition:all .25s;animation:playPulse 3s ease infinite;padding-left:4px}
+.play-btn:hover{background:#fff;transform:scale(1.1);box-shadow:0 16px 50px rgba(255,255,255,.3);animation:none}
+@keyframes playPulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.3)}70%{box-shadow:0 0 0 24px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+.coming-lbl{position:relative;z-index:1;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2.5px;color:rgba(255,255,255,.2);text-transform:uppercase}
+.sc-steps{display:flex;width:100%;max-width:960px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-top:none;border-radius:0 0 18px 18px;overflow:hidden;margin-bottom:72px}
+.sc-step{flex:1;padding:20px 20px;border-right:1px solid rgba(255,255,255,.06);transition:background .25s}
+.sc-step:last-child{border-right:none}
+.sc-step:hover{background:rgba(255,255,255,.03)}
+.ss-n{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.ss-t{font-size:12px;font-weight:400;color:rgba(255,255,255,.5);line-height:1.45}
+@media(max-width:700px){.sc-steps{flex-direction:column}.sc-step{border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}.sc-step:last-child{border-bottom:none}}
+.footer{border-top:1px solid rgba(255,255,255,.06);padding:28px 52px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;background:#08070a}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:rgba(255,255,255,.2);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .2s}
+.footer-logo:hover{color:rgba(255,255,255,.5)}
+.footer-copy{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.18);letter-spacing:.3px}
+.footer-links{display:flex;gap:22px;list-style:none}
+.footer-links a{font-size:12.5px;color:rgba(255,255,255,.2);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:rgba(255,255,255,.5)}
+@media(max-width:520px){.footer{padding:24px 20px;flex-direction:column;align-items:flex-start}}
+.rv{opacity:0;transform:translateY(30px);transition:opacity .9s ease,transform .9s ease}
+.rv.on{opacity:1;transform:translateY(0)}
+.rv-left{opacity:0;transform:translateX(-30px);transition:opacity .9s ease,transform .9s ease}
+.rv-left.on{opacity:1;transform:translateX(0)}
+.rv-scale{opacity:0;transform:scale(.96);transition:opacity .9s ease,transform .9s ease}
+.rv-scale.on{opacity:1;transform:scale(1)}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.32s}.d4{transition-delay:.45s}
+.para{transform:translateY(var(--py,0px));will-change:transform}
 </style>
 </head>
 <body>
 
-<!-- NOTE: This is a project copy of your provided HTML. I preserved all frontend components and only changed JS behavior at the bottom. -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div id="spotlight"></div>
 
-<!-- Keep your original page markup here (nav, hero, countdown, forms, etc). For brevity this file includes the important scripts only. -->
+<nav class="nav" id="nav">
+  <a class="nav-logo" href="#">
+    <span class="nav-logo-box">⚒</span>
+    <span class="nav-brand">ServerForge</span>
+  </a>
+  <button class="nav-btn" onclick="document.getElementById('hero-email').scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>document.getElementById('hero-email').focus(),600)">
+    Join waitlist →
+  </button>
+</nav>
 
-<!-- Placeholder for your full HTML content -->
+<section class="hero" id="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="badge-pip"></span>
+      Coming Soon
+    </div>
+    <div class="hero-hl">
+      <span class="hl-word">SERVER</span>
+      <span class="hl-word">FORGE</span>
+      <span class="hl-word">BUILD</span>
+    </div>
+    <div class="hl-script">Launch your server in minutes</div>
+    <p class="hero-desc">The fastest, easiest way to spin up a production-ready server. No config. No headaches. Just deploy.</p>
+    <div class="hero-form-wrap">
+      <form class="hero-form" onsubmit="event.preventDefault(); heroSubmit();">
+        <input type="email" id="hero-email" class="hero-input" placeholder="your@email.com" required>
+        <button type="submit" class="hero-submit">Notify me</button>
+      </form>
+      <p class="form-note">we'll email you when it launches</p>
+      <div class="form-ok" id="hero-ok">✓ &nbsp;You're in. See you at launch.</div>
+      <div class="form-err" id="hero-err"></div>
+    </div>
+  </div>
+  <div class="scroll-cue">
+    <div class="sc-line"></div>
+    <div class="sc-txt">Scroll</div>
+  </div>
+</section>
+
+<div style="position:relative;height:110px;overflow:hidden;background:#0a090d;margin-top:-1px;z-index:20"></div>
+
+<section class="countdown-sec parallax-section" id="countdown" data-speed="0.12">
+  <div class="cd-label rv">Time Until Launch</div>
+  <div class="scoreboard rv d1" id="scoreboard">
+    <div class="sb-unit">
+      <div class="sb-tile active" id="tile-d"><span class="sb-num" id="cd-days">25</span></div>
+      <span class="sb-word">Days</span>
+    </div>
+    <div class="sb-sep">:</div>
+    <div class="sb-unit">
+      <div class="sb-tile" id="tile-h"><span class="sb-num" id="cd-hours">00</span></div>
+      <span class="sb-word">Hours</span>
+    </div>
+    <div class="sb-sep">:</div>
+    <div class="sb-unit">
+      <div class="sb-tile" id="tile-m"><span class="sb-num" id="cd-mins">00</span></div>
+      <span class="sb-word">Minutes</span>
+    </div>
+    <div class="sb-sep">:</div>
+    <div class="sb-unit">
+      <div class="sb-tile" id="tile-s"><span class="sb-num" id="cd-secs">00</span></div>
+      <span class="sb-word">Seconds</span>
+    </div>
+  </div>
+  <div class="cd-headline rv d2">Something big is coming</div>
+  <div class="cd-sub rv d2">the easiest server setup ever built</div>
+  <form class="cd-form rv d3" onsubmit="event.preventDefault(); cdSubmit();">
+    <input type="email" id="cd-email" class="cd-input" placeholder="your@email.com" required>
+    <button type="submit" class="cd-btn">Join</button>
+  </form>
+  <p class="cd-note rv d3">Join hundreds already waiting.</p>
+  <div class="cd-ok" id="cd-ok">✓ &nbsp;You're in. See you at launch.</div>
+  <div class="cd-err" id="cd-err"></div>
+  <div class="cd-progress rv d4">
+    <div class="cd-prog-top">
+      <span>Waitlist Progress</span>
+      <span id="cd-pct">63%</span>
+    </div>
+    <div class="cd-track"><div class="cd-fill" id="cd-fill" style="width:63%"></div></div>
+  </div>
+</section>
+
+<div style="position:relative;height:110px;overflow:hidden;background:#08070a;margin-top:-1px;z-index:20"></div>
+
+<section class="showcase-sec parallax-section" id="showcase" data-speed="0.08">
+  <div class="sc-eyebrow rv">See It In Action</div>
+  <h2 class="sc-title rv d1">WATCH IT<br>GENERATE</h2>
+  <div class="sc-script rv d1">from blank form to ZIP in under a minute</div>
+  <div class="sc-frame rv-scale d2">
+    <div class="sc-chrome">
+      <div class="sc-dots">
+        <div class="sc-dot r"></div>
+        <div class="sc-dot y"></div>
+        <div class="sc-dot g"></div>
+      </div>
+      <div class="sc-url">serverforge.io/demo</div>
+    </div>
+    <div class="sc-video">
+      <button class="play-btn" onclick="alert('Video coming soon')">▶</button>
+      <p class="coming-lbl">Coming Soon</p>
+    </div>
+  </div>
+  <div class="sc-steps rv d3">
+    <div class="sc-step">
+      <div class="ss-n">01</div>
+      <div class="ss-t">Servername, version & type</div>
+    </div>
+    <div class="sc-step">
+      <div class="ss-n">02</div>
+      <div class="ss-t">Define rank ladder</div>
+    </div>
+    <div class="sc-step">
+      <div class="ss-n">03</div>
+      <div class="ss-t">Toggle features</div>
+    </div>
+    <div class="sc-step">
+      <div class="ss-n">04</div>
+      <div class="ss-t">Paste Gemini API Key</div>
+    </div>
+    <div class="sc-step">
+      <div class="ss-n">05</div>
+      <div class="ss-t">Download ZIP — you're live</div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <a class="footer-logo" href="#">⚒ &nbsp;ServerForge</a>
+  <span class="footer-copy">© 2025 ServerForge — built with ☕ and YAML</span>
+  <ul class="footer-links">
+    <li><a href="#">Discord</a></li>
+    <li><a href="#">Twitter</a></li>
+    <li><a href="#">GitHub</a></li>
+  </ul>
+</footer>
 
 <script>
-/* ═══════════════════════════════════════
-   COUNTDOWN TIMER — set to 25 days from now
-═══════════════════════════════════════ */
 (function(){
-  // Set launch to 25 days from the moment the page is loaded
-  const LAUNCH = Date.now() + 25 * 24 * 60 * 60 * 1000;
+  const dot=document.getElementById('cursor-dot');
+  const ring=document.getElementById('cursor-ring');
+  const spot=document.getElementById('spotlight');
+  let mx=window.innerWidth/2,my=window.innerHeight/2;
+  let rx=mx,ry=my;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX;my=e.clientY;
+    document.body.classList.add('has-moved');
+    spot.style.setProperty('--mx',mx+'px');
+    spot.style.setProperty('--my',my+'px');
+    dot.style.left=mx+'px';dot.style.top=my+'px';
+  });
+  (function lerpRing(){
+    rx+=(mx-rx)*0.2;ry+=(my-ry)*0.2;
+    ring.style.left=rx+'px';ring.style.top=ry+'px';
+    requestAnimationFrame(lerpRing);
+  })();
+  document.querySelectorAll('button,a,input').forEach(el=>{
+    el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover'));
+  });
+})();
 
+(function(){
+  const nav=document.getElementById('nav');
+  const tick=()=>nav.classList.toggle('stuck',window.scrollY>50);
+  window.addEventListener('scroll',tick,{passive:true});tick();
+})();
+
+(function(){
+  const els=document.querySelectorAll('.rv,.rv-left,.rv-scale');
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});
+  },{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+  els.forEach(el=>io.observe(el));
+})();
+
+(function(){
+  const secs=document.querySelectorAll('.parallax-section');
+  function onScroll(){
+    secs.forEach(s=>{
+      const sp=parseFloat(s.dataset.speed||0);
+      const rect=s.getBoundingClientRect();
+      const offset=rect.top*sp;
+      s.style.setProperty('--py',offset+'px');
+    });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+})();
+
+(function(){
+  const tiles=['tile-d','tile-h','tile-m','tile-s'];
+  let cur=3;
+  setInterval(()=>{
+    document.getElementById(tiles[cur]).classList.remove('active');
+    cur=(cur+1)%tiles.length;
+    document.getElementById(tiles[cur]).classList.add('active');
+  },1800);
+})();
+
+(function(){
+  const LAUNCH=Date.now()+25*24*60*60*1000;
   const pad=n=>String(n).padStart(2,'0');
-  function flip(el,val){ if(!el) return; el.textContent=val; }
-
+  function flip(el,val){if(!el)return;el.textContent=val;}
   const dEl=document.getElementById('cd-days');
   const hEl=document.getElementById('cd-hours');
   const mEl=document.getElementById('cd-mins');
   const sEl=document.getElementById('cd-secs');
-
   function tick(){
     const now=Date.now();
-    let diff=Math.max(0, LAUNCH - now);
-    const days=Math.floor(diff / (24*60*60*1000));
-    diff -= days * (24*60*60*1000);
-    const hours=Math.floor(diff / (60*60*1000));
-    diff -= hours * (60*60*1000);
-    const mins=Math.floor(diff / (60*1000));
-    diff -= mins * (60*1000);
-    const secs=Math.floor(diff / 1000);
-    if(dEl) flip(dEl, pad(days));
-    if(hEl) flip(hEl, pad(hours));
-    if(mEl) flip(mEl, pad(mins));
-    if(sEl) flip(sEl, pad(secs));
+    let diff=Math.max(0,LAUNCH-now);
+    const days=Math.floor(diff/(24*60*60*1000));
+    diff-=days*(24*60*60*1000);
+    const hours=Math.floor(diff/(60*60*1000));
+    diff-=hours*(60*60*1000);
+    const mins=Math.floor(diff/(60*1000));
+    diff-=mins*(60*1000);
+    const secs=Math.floor(diff/1000);
+    if(dEl)flip(dEl,pad(days));
+    if(hEl)flip(hEl,pad(hours));
+    if(mEl)flip(mEl,pad(mins));
+    if(sEl)flip(sEl,pad(secs));
   }
-  tick(); setInterval(tick,1000);
+  tick();setInterval(tick,1000);
 })();
-
-/* ═══════════════════════════════════════
-   FORMS — wire hero and countdown forms to /api/subscribe
-   Preserves existing UI behaviour and messages.
-═══════════════════════════════════════ */
 
 function valid(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim())}
 
-async function postSubscribe(email, source){
+async function postSubscribe(email,source){
   try{
-    const res = await fetch('/api/subscribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, source })
+    const res=await fetch('/api/subscribe',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,source})
     });
     return await res.json();
-  }catch(err){ return { error: String(err) }; }
+  }catch(err){return{error:String(err)};}
 }
 
 async function heroSubmit(){
   const el=document.getElementById('hero-email');
   const err=document.getElementById('hero-err');
   const ok=document.getElementById('hero-ok');
-  if(err) err.style.display='none'; if(ok) ok.style.display='none';
-  if(!el) return;
-  const email = el.value || '';
-  if(!valid(email)){ if(err){ err.textContent='Please enter a valid email.'; err.style.display='block'; } return; }
-  if(ok) ok.textContent='Saving...'; if(ok) ok.style.display='block';
-
-  const r = await postSubscribe(email, 'hero');
-  if(r && r.ok){ if(ok) ok.textContent="✓ You're in. See you at launch."; el.value=''; }
-  else { if(ok) ok.style.display='none'; if(err){ err.textContent = (r && (r.error||r.message)) ? (r.error||r.message) : 'Submission failed'; err.style.display='block'; } }
+  if(err)err.style.display='none';if(ok)ok.style.display='none';
+  if(!el)return;
+  const email=el.value||'';
+  if(!valid(email)){if(err){err.textContent='Please enter a valid email.';err.style.display='block';}return;}
+  if(ok)ok.textContent='Saving...';if(ok)ok.style.display='block';
+  const r=await postSubscribe(email,'hero');
+  if(r&&r.ok){if(ok)ok.textContent="✓ You're in. See you at launch.";el.value='';}
+  else{if(ok)ok.style.display='none';if(err){err.textContent=(r&&(r.error||r.message))?(r.error||r.message):'Submission failed';err.style.display='block';}}
 }
 
 async function cdSubmit(){
   const el=document.getElementById('cd-email');
   const err=document.getElementById('cd-err');
   const ok=document.getElementById('cd-ok');
-  if(err) err.style.display='none'; if(ok) ok.style.display='none';
-  if(!el) return;
-  const email = el.value || '';
-  if(!valid(email)){ if(err){ err.textContent='Please enter a valid email.'; err.style.display='block'; } return; }
-  if(ok) ok.textContent='Saving...'; if(ok) ok.style.display='block';
-
-  const r = await postSubscribe(email, 'countdown');
-  if(r && r.ok){ if(ok) ok.textContent='✓ You\'re in. See you at launch.'; el.value=''; }
-  else { if(ok) ok.style.display='none'; if(err){ err.textContent = (r && (r.error||r.message)) ? (r.error||r.message) : 'Submission failed'; err.style.display='block'; } }
+  if(err)err.style.display='none';if(ok)ok.style.display='none';
+  if(!el)return;
+  const email=el.value||'';
+  if(!valid(email)){if(err){err.textContent='Please enter a valid email.';err.style.display='block';}return;}
+  if(ok)ok.textContent='Saving...';if(ok)ok.style.display='block';
+  const r=await postSubscribe(email,'countdown');
+  if(r&&r.ok){if(ok)ok.textContent="✓ You're in. See you at launch.";el.value='';}
+  else{if(ok)ok.style.display='none';if(err){err.textContent=(r&&(r.error||r.message))?(r.error||r.message):'Submission failed';err.style.display='block';}}
 }
 
-// Keep Enter key handling consistent with original page
 document.addEventListener('keydown',e=>{
-  if(e.key!=='Enter') return;
-  if(document.activeElement.id==='hero-email') heroSubmit();
-  if(document.activeElement.id==='cd-email') cdSubmit();
+  if(e.key!=='Enter')return;
+  if(document.activeElement.id==='hero-email')heroSubmit();
+  if(document.activeElement.id==='cd-email')cdSubmit();
 });
 </script>
 </body>
