@@ -3,7 +3,16 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ServerForge — Coming Soon</title>
+<title>Pixelore — Coming Soon</title>
+<meta name="description" content="Pixelore helps you launch production-ready servers in minutes. Join the waitlist."/>
+<meta name="theme-color" content="#08070a"/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Pixelore — Coming Soon"/>
+<meta property="og:description" content="Pixelore helps you launch production-ready servers in minutes. Join the waitlist."/>
+<meta property="og:image" content="/23535699779.png"/>
+<meta property="og:site_name" content="Pixelore"/>
+<link rel="icon" type="image/png" href="/23535699779.png"/>
+<link rel="apple-touch-icon" href="/23535699779.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@700&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
@@ -25,12 +34,12 @@ body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;b
 .nav{position:fixed;top:0;left:0;right:0;z-index:500;height:64px;padding:0 52px;display:flex;align-items:center;justify-content:space-between;transition:background .5s,border-color .5s;border-bottom:1px solid transparent}
 .nav.stuck{background:rgba(8,7,10,.85);backdrop-filter:blur(24px);border-bottom-color:rgba(255,255,255,.06)}
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.nav-logo-box{width:32px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:15px;transition:border-color .25s,background .25s}
-.nav-logo:hover .nav-logo-box{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.08)}
-.nav-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:#fff}
+.nav-logo-box{width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:transparent;transition:transform .25s,filter .25s}
+.brand-logo-img{display:block;width:100%;height:100%;object-fit:contain;background:transparent;filter:drop-shadow(0 4px 14px rgba(0,0,0,.45))}
+.nav-logo:hover .nav-logo-box{transform:translateY(-1px) scale(1.03);filter:brightness(1.08)}
 .nav-btn{padding:9px 22px;border-radius:100px;border:1px solid rgba(255,255,255,.18);background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:rgba(255,255,255,.7);cursor:none;transition:border-color .25s,color .25s,background .25s}
 .nav-btn:hover{border-color:rgba(255,255,255,.5);color:#fff;background:rgba(255,255,255,.05)}
-@media(max-width:600px){.nav{padding:0 20px}.nav-btn{display:none}}
+@media(max-width:600px){.nav{padding:0 20px}.nav-btn{display:none}.nav-logo-box{width:34px;height:34px}}
 .page-wrap{position:relative}
 .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .hero-vid{position:absolute;inset:0;z-index:0;overflow:hidden;background:#08070a}
@@ -132,7 +141,9 @@ body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;b
 @media(max-width:700px){.sc-steps{flex-direction:column}.sc-step{border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}.sc-step:last-child{border-bottom:none}}
 .footer{border-top:1px solid rgba(255,255,255,.06);padding:28px 52px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;background:#08070a}
 .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:rgba(255,255,255,.2);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .2s}
+.footer-logo-img{width:22px;height:22px;display:block;object-fit:contain;background:transparent;opacity:.75;transition:opacity .2s,transform .2s}
 .footer-logo:hover{color:rgba(255,255,255,.5)}
+.footer-logo:hover .footer-logo-img{opacity:1;transform:translateY(-1px)}
 .footer-copy{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.18);letter-spacing:.3px}
 .footer-links{display:flex;gap:22px;list-style:none}
 .footer-links a{font-size:12.5px;color:rgba(255,255,255,.2);text-decoration:none;transition:color .2s}
@@ -156,8 +167,7 @@ body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;b
 
 <nav class="nav" id="nav">
   <a class="nav-logo" href="#">
-    <span class="nav-logo-box">⚒</span>
-    <span class="nav-brand">ServerForge</span>
+    <span class="nav-logo-box"><img src="/23535699779.png" class="brand-logo-img" alt="Pixelore logo"></span>
   </a>
   <button class="nav-btn" onclick="document.getElementById('hero-email').scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>document.getElementById('hero-email').focus(),600)">
     Join waitlist →
@@ -172,11 +182,10 @@ body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;b
       Coming Soon
     </div>
     <div class="hero-hl">
-      <span class="hl-word">SERVER</span>
-      <span class="hl-word">FORGE</span>
+      <span class="hl-word">PIXELORE</span>
       <span class="hl-word">BUILD</span>
     </div>
-    <div class="hl-script">Launch your server in minutes</div>
+    <div class="hl-script">Launch with Pixelore in minutes</div>
     <p class="hero-desc">The fastest, easiest way to spin up a production-ready server. No config. No headaches. Just deploy.</p>
     <div class="hero-form-wrap">
       <form class="hero-form" onsubmit="event.preventDefault(); heroSubmit();">
@@ -250,7 +259,7 @@ body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;b
         <div class="sc-dot y"></div>
         <div class="sc-dot g"></div>
       </div>
-      <div class="sc-url">serverforge.io/demo</div>
+      <div class="sc-url">pixelore.io/demo</div>
     </div>
     <div class="sc-video">
       <button class="play-btn" onclick="alert('Video coming soon')">▶</button>
@@ -266,8 +275,8 @@ body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;b
 </section>
 
 <footer class="footer">
-  <a class="footer-logo" href="#">⚒ &nbsp;ServerForge</a>
-  <span class="footer-copy">© 2025 ServerForge — built with ☕ and YAML</span>
+  <a class="footer-logo" href="#"><img src="/23535699779.png" class="footer-logo-img" alt="" aria-hidden="true"></a>
+  <span class="footer-copy">© 2026 Pixelore — built with ☕ and YAML</span>
   <ul class="footer-links">
     <li><a href="#">Discord</a></li>
     <li><a href="#">Twitter</a></li>

@@ -1,4 +1,4 @@
-# MC Tool Waitlist — Backend + Deploy
+# Pixelore Waitlist — Backend + Deploy
 
 This repo contains a small serverless backend (Vercel) and SQL to back a waitlist form. It intentionally does not modify your frontend — it will call the API at `/api/subscribe`.
 
